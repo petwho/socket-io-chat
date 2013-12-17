@@ -28,8 +28,7 @@
       var newMessageElement = document.createElement('div');
       var newMessageText = document.createTextNode(message);
       newMessageElement.appendChild(newMessageText);
-      messagesElement.insertBefore(newMessageElement,
-        lastMessageElement);
+      messagesElement.insertBefore(newMessageElement, lastMessageElement);
       lastMessageElement = newMessageElement;
     }
 
@@ -44,7 +43,8 @@
 
     inputElement.onkeydown = function(keyboardEvent) {
       if (keyboardEvent.keyCode === 13) {
-        socket.emit('clientMessage', inputElement.value);
+        sendMessage(inputElement.value);
+        console.log(inputElement.value);
         inputElement.value = '';
         return false;
       } else {
@@ -57,6 +57,24 @@
       var username = prompt('What username do you want to user?');
       socket.emit('login', username);
     });
+
+    function sendCommand(command, args) {
+      if (command === 'j') {
+        console.log(args)
+        socket.emit('join', args);
+      } else {
+        alert('unknown command: ' + command);
+      }
+    }
+    function sendMessage(message) {
+      var commandMatch = message.match(/^\/(\w*)(.*)/);
+      if (commandMatch) {
+        sendCommand(commandMatch[1], commandMatch[2].trim());
+      } else {
+        socket.emit('clientMessage', message);
+      }
+    }
+
   </script>
 </body>
 </html>
