@@ -1,7 +1,27 @@
 var httpd = require('http').createServer(handler);
+
 var io = require('socket.io').listen(httpd);
+var chat = io.of('/chat');
+
 var fs = require('fs');
+
+var redisPort = 6379;
+var redisHostname = '127.0.0.1';
+
+var redis = require('redis'),
+  RedisStore = require('socket.io/lib/stores/redis'),
+  pub = redis.createClient(redisPort, redisHostname),
+  sub = redis.createClient(redisPort, redisHostname),
+  client = redis.createClient(redisPort, redisHostname);
+  io.set('store', new RedisStore({
+    redisPub : pub,
+    redisSub : sub,
+    redisClient : client
+  }));
+
+
 httpd.listen(4000);
+
 function handler(req, res) {
   fs.readFile(__dirname + '/index.html',
     function(err, data) {
@@ -15,7 +35,7 @@ function handler(req, res) {
     );
 }
 
-io.sockets.on('connection', function (socket) {
+chat.on('connection', function (socket) {
   socket.on('clientMessage', function(content) {
     socket.emit('serverMessage', 'You said: ' + content);
     // socket.broadcast.emit('serverMessage', socket.id + ' said: ' + content);

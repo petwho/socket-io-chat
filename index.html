@@ -33,7 +33,9 @@
     }
 
     // ------------- BEGIN SOCKET.IO CLIENT ---------------
-    var socket = io.connect('http://localhost:4000');
+    // var socket = io.connect('http://localhost:4000');
+    var socket = io.connect('http://localhost:4000/chat');
+
     socket.on('serverMessage', function(content) {
       addMessage(content);
     });
