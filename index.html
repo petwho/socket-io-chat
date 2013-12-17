@@ -32,11 +32,16 @@
         lastMessageElement);
       lastMessageElement = newMessageElement;
     }
+
+    // ------------- BEGIN SOCKET.IO CLIENT ---------------
     var socket = io.connect('http://localhost:4000');
     socket.on('serverMessage', function(content) {
       addMessage(content);
     });
+
+    // On client enter message
     var inputElement = document.getElementById('input');
+
     inputElement.onkeydown = function(keyboardEvent) {
       if (keyboardEvent.keyCode === 13) {
         socket.emit('clientMessage', inputElement.value);
@@ -46,6 +51,12 @@
         return true;
       }
     };
+
+    // On client log in
+    socket.on('login', function() {
+      var username = prompt('What username do you want to user?');
+      socket.emit('login', username);
+    });
   </script>
 </body>
 </html>

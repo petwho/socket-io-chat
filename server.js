@@ -21,5 +21,19 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('serverMessage', socket.id + ' said: ' +
       content);
   });
+
+  socket.on('login', function(username) {
+    socket.set('username', username, function(err) {
+      if(err) {
+        throw err;
+      }
+
+      socket.emit('serverMessage', 'Currently logged in as: ' + username);
+
+      socket.broadcast.emit('serverMessage', 'User ' + username + ' logged in');
+    });
+  });
+
+  socket.emit('login');
 });
 
